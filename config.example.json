@@ -1,0 +1,20 @@
+{
+    "shows": [
+        {
+            "name": "KEBF",
+            "url": "https://ice9.securenetsystems.net/KEBF",
+            "day": "Sunday",
+            "time": "10:00 AM",
+            "timezone": "America/Los_Angeles",
+            "duration": 3600
+        },
+        {
+            "name": "WAYO",
+            "url": "http://streaming.wayofm.org:8000/wayo-192",
+            "day": "Friday",
+            "time": "1:00 AM",
+            "timezone": "America/New_York",
+            "duration": 3600
+        }
+    ]
+}

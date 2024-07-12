@@ -1,0 +1,47 @@
+# project configs
+run_recorder.sh
+config.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# Install local dependencies
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python package files
+*.egg
+*.egg-info/
+dist/
+build/
+*.egg-info/
+
+# Recording files
+recordings/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# System files
+*.bak
+*.old
+*.orig
