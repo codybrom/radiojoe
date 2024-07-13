@@ -8,6 +8,13 @@ This project is a Python script that records internet radio shows and downloads 
 - ffmpeg
 - Virtual environment (recommended)
 
+## Features
+- Schedule recordings for specific days and times.
+- Record multiple shows concurrently.
+- Automatic file naming and organization.
+- Configuration file for easy management of show details.
+- Environment variables for flexible deployment.
+
 ## Installation
 
 1. Clone the repository:
@@ -29,17 +36,17 @@ This project is a Python script that records internet radio shows and downloads 
 
 ## Configuration
 
-1. Create a `config.json` file in the root directory with your show details:
+1. Create a `config.json` file in the root directory with your show details. Duration is measured in seconds (3600 = 1 hour)
 
    ```json
    {
      "shows": [
        {
-         "name": "WESS",
-         "url": "http://wessstream.esu.edu:8000/play",
-         "day": "Monday",
-         "time": "10:00 PM",
-         "timezone": "America/New_York",
+         "name": "KEXP",
+         "url": "https://stream.kexp.org/kexp1",
+         "day": "Sunday",
+         "time": "10:00 AM",
+         "timezone": "America/Los_Angeles",
          "duration": 3600
        },
        // Add other shows here

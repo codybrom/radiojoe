@@ -1,16 +1,16 @@
 {
     "shows": [
         {
-            "name": "KEBF",
-            "url": "https://ice9.securenetsystems.net/KEBF",
+            "name": "KEXP",
+            "url": "https://stream.kexp.org/kexp1",
             "day": "Sunday",
             "time": "10:00 AM",
             "timezone": "America/Los_Angeles",
             "duration": 3600
         },
         {
-            "name": "WAYO",
-            "url": "http://streaming.wayofm.org:8000/wayo-192",
+            "name": "WFMU",
+            "url": "https://stream0.wfmu.org/wfmu-high.mp3",
             "day": "Friday",
             "time": "1:00 AM",
             "timezone": "America/New_York",
