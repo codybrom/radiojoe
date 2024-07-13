@@ -59,7 +59,7 @@ def record_stream(name, url, duration, output_dir):
             'ffmpeg',
             '-i', url,
             '-t', str(duration),
-            '-acodec', 'copy',
+            '-acodec', 'libmp3lame',
             output_file
         ]
 
