@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 import pytz
 import subprocess
 import logging
-import sys
+import threading
+
 
 # Get the base directory from environment variable, with a fallback
 BASE_DIR = os.getenv('RADIOJOE_BASE_DIR',
@@ -49,34 +50,44 @@ def convert_to_central(time_str, day, from_tz_str):
 
 
 def record_stream(name, url, duration, output_dir):
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_file = os.path.join(output_dir, f'{name}_{timestamp}.mp3')
+    def _record():  # Inner function to encapsulate recording logic
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        output_file = os.path.join(output_dir, f'{name}_{timestamp}.mp3')
 
-    # FFmpeg command to capture the stream
-    command = [
-        'ffmpeg',
-        '-i', url,
-        '-t', str(duration),
-        '-acodec', 'copy',
-        output_file
-    ]
+        # FFmpeg command to capture the stream
+        command = [
+            'ffmpeg',
+            '-i', url,
+            '-t', str(duration),
+            '-acodec', 'copy',
+            output_file
+        ]
 
-    # Log the start of the recording
-    logging.info(f"Starting recording {name}: {url} for {
-                 duration} seconds, saving to {output_file}")
+        try:
+            # Log the start of the recording
+            logging.info(f"Starting recording {name}: {url} for {
+                duration} seconds, saving to {output_file}")
 
-    # Run the command
-    process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Run the command
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    # Wait for the process to complete
-    stdout, stderr = process.communicate()
+            # Wait for the process to complete
+            stdout, stderr = process.communicate()
 
-    if process.returncode == 0:
-        logging.info(f'Finished recording {name}: {
-                     url} for {duration} seconds')
-    else:
-        logging.error(f'Error recording {name}: {url} - {stderr.decode()}')
+            # Check for errors
+            if process.returncode != 0:
+                raise Exception(f"ffmpeg exited with error code {
+                                process.returncode}: {stderr.decode()}")
+
+            logging.info(f'Finished recording {name}: {
+                url} for {duration} seconds')
+        except Exception as e:
+            logging.error(f'Error recording {name}: {url} - {e}')
+
+    # Create and start the recording thread
+    recording_thread = threading.Thread(target=_record)
+    recording_thread.start()
 
 # Schedule recordings
 
