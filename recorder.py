@@ -8,7 +8,6 @@ import subprocess
 import logging
 import threading
 
-
 # Get the base directory from environment variable, with a fallback
 BASE_DIR = os.getenv('RADIOJOE_BASE_DIR',
                      os.path.dirname(os.path.abspath(__file__)))
@@ -18,6 +17,9 @@ log_file = os.getenv('RADIOJOE_LOG_FILE',
                      os.path.join(BASE_DIR, 'recorder.log'))
 logging.basicConfig(filename=log_file, level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
+
+config_path = os.getenv('RADIOJOE_CONFIG_FILE',
+                        os.path.join(BASE_DIR, 'config.json'))
 
 
 def convert_to_central(time_str, day, from_tz_str):
@@ -66,7 +68,7 @@ def record_stream(name, url, duration, output_dir):
         try:
             # Log the start of the recording
             logging.info(f"Starting recording {name}: {url} for {
-                duration} seconds, saving to {output_file}")
+                         duration} seconds, saving to {output_file}")
 
             # Run the command
             process = subprocess.Popen(
@@ -81,7 +83,7 @@ def record_stream(name, url, duration, output_dir):
                                 process.returncode}: {stderr.decode()}")
 
             logging.info(f'Finished recording {name}: {
-                url} for {duration} seconds')
+                         url} for {duration} seconds')
         except Exception as e:
             logging.error(f'Error recording {name}: {url} - {e}')
 
@@ -134,12 +136,46 @@ def schedule_recordings(config):
         time.sleep(1)
 
 
+def load_config():
+    with open(config_path, 'r') as f:
+        return json.load(f)
+
+
+def recheck_config():
+    while True:
+        logging.info('Checking configuration...')
+        now = datetime.now(pytz.timezone('America/Chicago'))
+        config = load_config()  # Load the configuration again
+        upcoming_recordings = [
+            convert_to_central(show['time'], show['day'], show['timezone']) for show in config['shows']
+        ]
+        upcoming_recordings = sorted(
+            [r for r in upcoming_recordings if r[1] > now.strftime("%H:%M")])
+
+        # Only recheck if no recordings are starting within the next 15 minutes
+        if not upcoming_recordings or (datetime.strptime(upcoming_recordings[0][1], "%H:%M") - now).total_seconds() > 900:
+            schedule.clear()  # Clear the existing schedule
+
+            # Load the configuration again
+            config = load_config()
+
+            # Schedule recordings with the new configuration
+            schedule_recordings(config)
+
+        # Sleep for 12 hours
+        time.sleep(60)  # 12 hours in seconds
+
+
 if __name__ == "__main__":
     logging.info('Starting the recorder script')
-    config_path = os.getenv('RADIOJOE_CONFIG_FILE',
-                            os.path.join(BASE_DIR, 'config.json'))
 
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    logging.info("Starting scheduler")
-    schedule_recordings(config)
+    config = load_config()
+
+    # Start the scheduler in a separate thread
+    scheduler_thread = threading.Thread(
+        target=schedule_recordings, args=(config,))
+    scheduler_thread.start()
+
+    # Start the recheck configuration task in a separate thread
+    recheck_thread = threading.Thread(target=recheck_config)
+    recheck_thread.start()
