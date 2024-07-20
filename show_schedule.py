@@ -4,6 +4,7 @@ import pytz
 import requests
 import concurrent.futures
 import calendar
+from collections import defaultdict
 
 
 def load_config(filename):
@@ -37,37 +38,52 @@ def test_link(url, retries=3):
     return "❌", "Max retries reached"
 
 
+def get_next_show_datetime(show, now):
+    show_day = show['day']
+    show_time = show['time']
+    show_tz = pytz.timezone(show['timezone'])
+
+    # Parse the show time
+    show_time = datetime.strptime(show_time, '%I:%M %p').time()
+
+    # Find the next occurrence of the show
+    days_ahead = (list(calendar.day_name).index(
+        show_day) - now.weekday() + 7) % 7
+    next_show_date = now.date() + timedelta(days=days_ahead)
+    show_datetime = datetime.combine(next_show_date, show_time)
+    show_datetime = show_tz.localize(show_datetime)
+    show_datetime_central = show_datetime.astimezone(
+        pytz.timezone('America/Chicago'))
+
+    # If the show is in the past, move to next week
+    if show_datetime_central < now:
+        show_datetime_central += timedelta(days=7)
+        show_datetime = show_datetime + timedelta(days=7)
+
+    return show_datetime_central, show_datetime
+
+
 def get_next_7_days_schedule(config):
     now = datetime.now(pytz.timezone('America/Chicago'))
-    next_7_days = []
     end_date = now + timedelta(days=7)
 
+    next_7_days = defaultdict(list)
     for show in config['shows']:
-        show_day = show['day']
-        show_time = show['time']
-        show_tz = pytz.timezone(show['timezone'])
+        next_show_datetime_central, next_show_datetime_original = get_next_show_datetime(
+            show, now)
+        if next_show_datetime_central < end_date:
+            day_key = next_show_datetime_central.date()
+            next_7_days[day_key].append(
+                (show['name'], next_show_datetime_central, next_show_datetime_original, show['url'], show['timezone']))
 
-        # Find the next occurrence of the show
-        days_ahead = (list(calendar.day_name).index(
-            show_day) - now.weekday() + 7) % 7
-        next_show_date = now.date() + timedelta(days=days_ahead)
-        show_datetime = datetime.combine(
-            next_show_date, datetime.strptime(show_time, '%I:%M %p').time())
-        show_datetime = show_tz.localize(show_datetime)
-        show_datetime_central = show_datetime.astimezone(
-            pytz.timezone('America/Chicago'))
+    # Sort shows within each day
+    for day in next_7_days:
+        next_7_days[day].sort(key=lambda x: x[1])
 
-        # If the show is in the past, move to next week
-        if show_datetime_central < now:
-            show_datetime_central += timedelta(days=7)
+    # Sort days
+    sorted_days = sorted(next_7_days.items())
 
-        # Add the show if it's within the next 7 days
-        if show_datetime_central < end_date:
-            next_7_days.append(
-                (show['name'], show_datetime_central, show['url']))
-
-    next_7_days.sort(key=lambda x: x[1])
-    return next_7_days
+    return sorted_days
 
 
 def print_schedule(schedule):
@@ -76,23 +92,34 @@ def print_schedule(schedule):
           (datetime.now(pytz.timezone('America/Chicago')) + timedelta(days=7)).strftime('%A, %B %d, %Y')})\n")
     print("Testing links... This may take a moment.\n")
 
+    all_shows = [show for day in schedule for show in day[1]]
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         future_to_show = {executor.submit(
-            test_link, show[2]): show for show in schedule}
+            test_link, show[3]): show for show in all_shows}
 
+        results = {}
         for future in concurrent.futures.as_completed(future_to_show):
             show = future_to_show[future]
-            show_name, show_datetime, url = show
             try:
                 link_status, status_info = future.result(timeout=15)
             except concurrent.futures.TimeoutError:
                 link_status, status_info = "⏳", "Timeout"
+            results[show] = (link_status, status_info)
 
+    for day, shows in schedule:
+        print(f"{day.strftime('%A, %B %d, %Y')}")
+        for show in shows:
+            show_name, show_datetime_central, show_datetime_original, url, timezone = show
+            link_status, status_info = results[show]
             print(f"{link_status} {show_name}")
-            print(f"   {show_datetime.strftime(
-                '%A, %B %d, %Y at %I:%M %p %Z')}")
+            print(f"   Local time (CDT): {
+                  show_datetime_central.strftime('%I:%M %p')}")
+            print(f"   Original time ({timezone}): {
+                  show_datetime_original.strftime('%I:%M %p')}")
             print(f"   {url}")
             print(f"   {status_info}\n")
+        print()  # Extra newline between days
 
 
 if __name__ == "__main__":
