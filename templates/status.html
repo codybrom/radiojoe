@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Status{% endblock %}
+{% block content %}
+    <h1>System Status</h1>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <strong>Last Recording:</strong> {{ status.last_recording }}
+        </li>
+        <li class="list-group-item">
+            <strong>Next Recording:</strong> {{ status.next_recording }}
+        </li>
+        <li class="list-group-item">
+            <strong>Disk Space:</strong> {{ status.disk_space }}
+        </li>
+    </ul>
+{% endblock %}

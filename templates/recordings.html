@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Recordings{% endblock %}
+{% block content %}
+    <h1>Recordings</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Genre</th>
+                <th>Station</th>
+                <th>Recording Date</th>
+                <th>Track #</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for recording in recordings %}
+                <tr>
+                    <td>{{ recording.filename }}</td>
+                    <td>{{ recording.tags.title }}</td>
+                    <td>{{ recording.tags.artist }}</td>
+                    <td>{{ recording.tags.album }}</td>
+                    <td>{{ recording.tags.genre }}</td>
+                    <td>{{ recording.tags.station }}</td>
+                    <td>{{ recording.tags.recording_date }}</td>
+                    <td>{{ recording.tags.track_number }}</td>
+                    <td>
+                        <audio controls>
+                            <source src="{{ url_for('serve_recording', filename=recording.filename) }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <a href="{{ url_for('edit_tags', filename=recording.filename) }}" class="btn btn-sm btn-secondary">Edit Tags</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

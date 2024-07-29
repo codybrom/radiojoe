@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Edit MP3 Tags{% endblock %}
+{% block content %}
+    <h1>Edit MP3 Tags</h1>
+    <h2>{{ filename }}</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ tags.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="artist">Artist</label>
+            <input type="text" class="form-control" id="artist" name="artist" value="{{ tags.artist }}">
+        </div>
+        <div class="form-group">
+            <label for="album">Album</label>
+            <input type="text" class="form-control" id="album" name="album" value="{{ tags.album }}">
+        </div>
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" class="form-control" id="genre" name="genre" value="{{ tags.genre }}">
+        </div>
+        <div class="form-group">
+            <label for="station">Station</label>
+            <input type="text" class="form-control" id="station" name="station" value="{{ tags.station }}">
+        </div>
+        <div class="form-group">
+            <label for="recording_date">Recording Date</label>
+            <input type="text" class="form-control" id="recording_date" name="recording_date" value="{{ tags.recording_date }}">
+        </div>
+        <div class="form-group">
+            <label for="track_number">Track Number</label>
+            <input type="text" class="form-control" id="track_number" name="track_number" value="{{ tags.track_number }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Tags</button>
+    </form>
+{% endblock %}
