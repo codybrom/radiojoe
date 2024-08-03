@@ -1,16 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Status{% endblock %}
+{% block header %}System Status{% endblock %}
 {% block content %}
-    <h1>System Status</h1>
-    <ul class="list-group">
-        <li class="list-group-item">
-            <strong>Last Recording:</strong> {{ status.last_recording }}
-        </li>
-        <li class="list-group-item">
-            <strong>Next Recording:</strong> {{ status.next_recording }}
-        </li>
-        <li class="list-group-item">
-            <strong>Disk Space:</strong> {{ status.disk_space }}
-        </li>
-    </ul>
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">System Information</h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">Current status of Radiojoe system.</p>
+  </div>
+  <div class="border-t border-gray-200">
+    <dl>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Disk Usage</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          Total: {{ status.disk_usage.total }} | Used: {{ status.disk_usage.used }} ({{ status.disk_usage.percent }}) | Free: {{ status.disk_usage.free }}
+        </dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">CPU Usage</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ status.cpu_usage }}</dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Memory Usage</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ status.memory_usage }}</dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Last Recording</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ status.last_recording }}</dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Next Recording</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{ status.next_recording }}
+          {% if status.next_recording_relative != "N/A" %}
+            <br><span class="text-sm text-gray-500">({{ status.next_recording_relative }})</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Total Recordings</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ status.total_recordings }}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
 {% endblock %}

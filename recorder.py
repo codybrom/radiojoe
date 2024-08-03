@@ -9,7 +9,8 @@ import logging
 import threading
 import mutagen
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TIT2, TPE1, TALB, TCON
+from mutagen.id3 import ID3
+from mutagen.id3._frames import TPE1, TCON, TIT2, TALB
 
 # Get the base directory from environment variable, with a fallback
 BASE_DIR = os.getenv('RADIOJOE_BASE_DIR',
@@ -127,10 +128,8 @@ def record_stream(name, url, duration, output_dir, metadata):
                     audio = MP3(output_file, ID3=ID3)
 
                     # Add ID3 tag if it doesn't exist
-                    try:
-                        audio.add_tags()
-                    except mutagen.id3.error:
-                        pass
+                    if audio.tags is None:
+                        audio.tags = ID3()
 
                     # Format the title as "Show Name - Month Day, Year - HH:MM AM/PM Timezone"
                     recording_time = datetime.now(pytz.timezone(

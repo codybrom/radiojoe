@@ -1,37 +1,63 @@
 {% extends "base.html" %}
 {% block title %}Edit MP3 Tags{% endblock %}
+{% block header %}Edit MP3 Tags{% endblock %}
 {% block content %}
-    <h1>Edit MP3 Tags</h1>
-    <h2>{{ filename }}</h2>
-    <form method="post">
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ tags.title }}" required>
+<div class="mt-10 sm:mt-0">
+  <div class="md:grid md:grid-cols-3 md:gap-6">
+    <div class="md:col-span-1">
+      <div class="px-4 sm:px-0">
+        <h3 class="text-base font-semibold leading-6 text-gray-900">MP3 Tags</h3>
+        <p class="mt-1 text-sm text-gray-600">Edit the metadata for this recording.</p>
+        <p class="mt-2 text-sm font-medium text-gray-700">File: {{ filename }}</p>
+      </div>
+    </div>
+    <div class="mt-5 md:col-span-2 md:mt-0">
+      <form method="post">
+        <div class="overflow-hidden shadow sm:rounded-md">
+          <div class="bg-white px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6">
+                <label for="filename" class="block text-sm font-medium leading-6 text-gray-900">Filename</label>
+                <input type="text" name="filename" id="filename" value="{{ filename }}" class="mt-2 block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6" readonly>
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
+                <input type="text" name="title" id="title" value="{{ tags.title }}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="artist" class="block text-sm font-medium leading-6 text-gray-900">Artist</label>
+                <input type="text" name="artist" id="artist" value="{{ tags.artist }}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="album" class="block text-sm font-medium leading-6 text-gray-900">Album</label>
+                <input type="text" name="album" id="album" value="{{ tags.album }}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="genre" class="block text-sm font-medium leading-6 text-gray-900">Genre</label>
+                <input type="text" name="genre" id="genre" value="{{ tags.genre }}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="year" class="block text-sm font-medium leading-6 text-gray-900">Year</label>
+                <input type="text" name="year" id="year" value="{{ tags.year }}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+
+              <div class="col-span-6">
+                <label for="comment" class="block text-sm font-medium leading-6 text-gray-900">Comment</label>
+                <textarea name="comment" id="comment" rows="3" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">{{ tags.comment }}</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
+            <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update Tags</button>
+          </div>
         </div>
-        <div class="form-group">
-            <label for="artist">Artist</label>
-            <input type="text" class="form-control" id="artist" name="artist" value="{{ tags.artist }}">
-        </div>
-        <div class="form-group">
-            <label for="album">Album</label>
-            <input type="text" class="form-control" id="album" name="album" value="{{ tags.album }}">
-        </div>
-        <div class="form-group">
-            <label for="genre">Genre</label>
-            <input type="text" class="form-control" id="genre" name="genre" value="{{ tags.genre }}">
-        </div>
-        <div class="form-group">
-            <label for="station">Station</label>
-            <input type="text" class="form-control" id="station" name="station" value="{{ tags.station }}">
-        </div>
-        <div class="form-group">
-            <label for="recording_date">Recording Date</label>
-            <input type="text" class="form-control" id="recording_date" name="recording_date" value="{{ tags.recording_date }}">
-        </div>
-        <div class="form-group">
-            <label for="track_number">Track Number</label>
-            <input type="text" class="form-control" id="track_number" name="track_number" value="{{ tags.track_number }}">
-        </div>
-        <button type="submit" class="btn btn-primary">Update Tags</button>
-    </form>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

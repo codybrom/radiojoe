@@ -1,41 +1,160 @@
 {% extends "base.html" %}
 {% block title %}Recordings{% endblock %}
+{% block header %}Recordings{% endblock %}
 {% block content %}
-    <h1>Recordings</h1>
-    <table class="table">
-        <thead>
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">Recordings</h1>
+      <p class="mt-2 text-sm text-gray-700">A list of all recorded shows with playback and editing options.</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <button type="button" onclick="exportRecordings()" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Export All</button>
+    </div>
+  </div>
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead>
             <tr>
-                <th>Filename</th>
-                <th>Title</th>
-                <th>Artist</th>
-                <th>Album</th>
-                <th>Genre</th>
-                <th>Station</th>
-                <th>Recording Date</th>
-                <th>Track #</th>
-                <th>Actions</th>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <a href="#" class="group inline-flex" onclick="sortTable(0)">
+                  Title
+                  <span class="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <a href="#" class="group inline-flex" onclick="sortTable(1)">
+                  Artist
+                  <span class="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <a href="#" class="group inline-flex" onclick="sortTable(2)">
+                  Date
+                  <span class="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </th>
+              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                <span class="sr-only">Actions</span>
+              </th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
             {% for recording in recordings %}
-                <tr>
-                    <td>{{ recording.filename }}</td>
-                    <td>{{ recording.tags.title }}</td>
-                    <td>{{ recording.tags.artist }}</td>
-                    <td>{{ recording.tags.album }}</td>
-                    <td>{{ recording.tags.genre }}</td>
-                    <td>{{ recording.tags.station }}</td>
-                    <td>{{ recording.tags.recording_date }}</td>
-                    <td>{{ recording.tags.track_number }}</td>
-                    <td>
-                        <audio controls>
-                            <source src="{{ url_for('serve_recording', filename=recording.filename) }}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                        <a href="{{ url_for('edit_tags', filename=recording.filename) }}" class="btn btn-sm btn-secondary">Edit Tags</a>
-                    </td>
-                </tr>
+            <tr>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ recording.tags.title }}</td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ recording.tags.artist }}</td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ recording.date }}</td>
+              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                <button onclick="togglePlayer('{{ recording.filename }}')" class="text-indigo-600 hover:text-indigo-900">Play</button>
+                <a href="{{ url_for('edit_tags', filename=recording.filename) }}" class="text-indigo-600 hover:text-indigo-900 ml-4">Edit</a>
+                <a href="{{ url_for('serve_recording', filename=recording.filename) }}" download class="text-indigo-600 hover:text-indigo-900 ml-4">Download</a>
+                <button onclick="deleteRecording('{{ recording.filename }}')" class="text-red-600 hover:text-red-900 ml-4">Delete</button>
+              </td>
+            </tr>
+            <tr id="player-{{ recording.filename }}" class="hidden">
+              <td colspan="4">
+                <audio controls class="w-full">
+                  <source src="{{ url_for('serve_recording', filename=recording.filename) }}" type="audio/mpeg">
+                  Your browser does not support the audio element.
+                </audio>
+              </td>
+            </tr>
             {% endfor %}
-        </tbody>
-    </table>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePlayer(filename) {
+  const playerRow = document.getElementById(`player-${filename}`);
+  playerRow.classList.toggle('hidden');
+}
+
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.querySelector("table");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
+function deleteRecording(filename) {
+  if (confirm('Are you sure you want to delete this recording?')) {
+    fetch(`/delete_recording/${filename}`, { method: 'POST' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error deleting recording: ' + data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+}
+
+function exportRecordings() {
+  fetch('/export_recordings')
+    .then(response => response.json())
+    .then(data => {
+      const csvContent = "data:text/csv;charset=utf-8," 
+        + "Filename,Title,Artist,Album,Genre,Year,Date\n"
+        + data.map(r => `${r.filename},${r.title},${r.artist},${r.album},${r.genre},${r.year},${r.date}`).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "recordings_export.csv");
+      document.body.appendChild(link);
+      link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 {% endblock %}
