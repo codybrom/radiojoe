@@ -9,6 +9,7 @@ This project is a Python script that records internet radio shows and downloads 
 - Virtual environment (recommended)
 
 ## Features
+
 - Schedule recordings for specific days and times.
 - Record multiple shows concurrently.
 - Automatic file naming and organization.
@@ -19,18 +20,21 @@ This project is a Python script that records internet radio shows and downloads 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/codybrom/radiojoe.git
    cd radiojoe
    ```
 
 2. Create and activate a virtual environment:
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate
    ```
 
 3. Install the required Python libraries:
+
    ```bash
    pip install schedule pytz requests
    ```
@@ -115,12 +119,14 @@ This test helps ensure that your configured streams are working correctly before
 To ensure the script runs at system startup:
 
 1. Open the crontab editor:
+
    ```bash
    crontab -e
    ```
 
 2. Add the following entry:
-   ```
+
+   ```shell
    @reboot /path/to/your/project/run_recorder.sh >> /path/to/your/project/recorder.log 2>&1
    ```
 
