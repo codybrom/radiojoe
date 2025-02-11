@@ -5,10 +5,13 @@
 <div class="px-4 sm:px-6 lg:px-8">
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
-      <p class="mt-2 text-sm text-gray-700">Current time: {{ current_time.strftime('%I:%M %p %A, %B %d') }} (America/Chicago)</p>
+      <p class="mt-2 text-sm text-gray-700">Current time: {{ current_time.strftime('%I:%M %p %A, %B %d') }}
+        (America/Chicago)</p>
     </div>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <a href="{{ url_for('add_show') }}" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add New Show</a>
+      <a href="{{ url_for('add_show') }}"
+        class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add
+        New Show</a>
     </div>
   </div>
   <div class="mt-8 flow-root">
@@ -29,13 +32,16 @@
           <tbody class="divide-y divide-gray-200">
             {% for show in shows %}
             <tr>
-              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ show.name }}</td>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ show.name }}
+              </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ show.day }}</td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ show.time }}</td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ show.timezone }}</td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                <a href="{{ url_for('edit_show', index=show.config_index) }}" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, {{ show.name }}</span></a>
-                <a href="{{ show.url }}" target="_blank" class="ml-4 text-indigo-600 hover:text-indigo-900">Listen Live</a>
+                <a href="{{ url_for('edit_show', index=show.config_index) }}"
+                  class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, {{ show.name }}</span></a>
+                <a href="{{ show.url }}" target="_blank" class="ml-4 text-indigo-600 hover:text-indigo-900">Listen
+                  Live</a>
               </td>
             </tr>
             {% endfor %}

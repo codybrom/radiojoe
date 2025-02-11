@@ -29,7 +29,6 @@ build/
 recordings/
 
 # Editor files
-.vscode/
 .idea/
 *.swp
 *~
