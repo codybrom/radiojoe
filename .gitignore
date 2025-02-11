@@ -1,7 +1,6 @@
 # project configs
-run_recorder.sh
 config.json
-radiojoe_status.json
+status.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

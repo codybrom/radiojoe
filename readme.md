@@ -1,122 +1,74 @@
 # Radiojoe - Internet Radio Recorder
 
-This project is a Python script that records internet radio shows and downloads them for later listening. The recording schedule and stream URLs are managed via a configuration file, and the script uses environment variables for flexible deployment.
+This project is a Python application designed to record internet radio shows automatically. It features a web interface for managing recording schedules, browsing recordings, and editing metadata. The application uses a configuration file for scheduling details and leverages environment variables for flexible deployment.
 
 ## Prerequisites
 
-- Python 3
-- ffmpeg
+- **Python 3.12**
+- ffmpeg (installed and accessible in your system's PATH)
 - Virtual environment (recommended)
 
 ## Features
 
-- Schedule recordings for specific days and times.
-- Record multiple shows concurrently.
-- Automatic file naming and organization.
-- Configuration file for easy management of show details.
-- Environment variables for flexible deployment.
-- Test the schedule to verify stream availability.
+- **Scheduling & Recording:**
+  - Schedule recordings for specific days and times, recurring weekly.
+  - Supports different timezones
+  - Concurrent recording of multiple shows.
+  - Automatic MP3 tagging
+
+- **Web Interface:**
+  - Add, edit, and delete scheduled recordings through a user-friendly web interface.
+  - Browse and listen to recorded shows directly from the web interface.
+  - Edit MP3 metadata tags (title, artist, album, genre, year, comment).
+  - Delete unwanted recordings.
+  - View system status (disk usage, CPU usage, memory usage, last recording, next recording).
+  - Export recording data in JSON format.
 
 ## Installation
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/codybrom/radiojoe.git
-   cd radiojoe
-   ```
+    ```bash
+    git clone https://github.com/codybrom/radiojoe.git
+    cd radiojoe
+    ```
 
 2. Create and activate a virtual environment:
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-3. Install the required Python libraries:
+3. Install the required Python packages:
 
-   ```bash
-   pip install schedule pytz requests
-   ```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Configuration
 
-1. Create a `config.json` file in the root directory with your show details and information for the ID3 tags. Duration is measured in seconds (3600 = 1 hour)
+Create a `config.json` file in the root directory with your show details. An example configuration (`config.example.json`) is provided. Duration is measured in seconds (3600 = 1 hour)
 
-   ```json
-   {
-     "shows": [
-        {
-            "name": "KEXP",
-            "url": "https://17793.live.streamtheworld.com/KUOWFM_HIGH_MP3.mp3",
-            "day": "Thursday",
-            "time": "10:00 PM",
-            "timezone": "America/Los_Angeles",
-            "duration": 3600,
-            "artist": "KUOW Spotlight",
-            "album": "KUOW Spotlight",
-            "genre": "Radio"
-        },
-       // Add other shows here
-     ]
-   }
-   ```
+## Running the Application
 
-2. Create a `run_recorder.sh` script to set environment variables and run the Python script:
+1. Make `run_recorder.sh` executable:
 
-   ```bash
-   #!/bin/bash
+    ```bash
+    chmod +x run_recorder.sh
+    ```
 
-   # Set environment variables
-   export RADIOJOE_BASE_DIR="/path/to/your/project"
-   export RADIOJOE_LOG_FILE="$RADIOJOE_BASE_DIR/recorder.log"
-   export RADIOJOE_OUTPUT_DIR="$RADIOJOE_BASE_DIR/recordings"
-   export RADIOJOE_CONFIG_FILE="$RADIOJOE_BASE_DIR/config.json"
+2. Run `run_recorder.sh`. This script starts both the recording process and the Flask web interface.
 
-   # Set the working directory
-   cd "$RADIOJOE_BASE_DIR"
+    ```bash
+    ./run_recorder.sh
+    ```
 
-   # Activate virtual environment
-   source /path/to/your/project/venv/bin/activate
-
-   # Run the Python script
-   python3 "$RADIOJOE_BASE_DIR/recorder.py"
-   ```
-
-   Make sure to update the paths in this script to match your system.
-
-## Running the Script
-
-Make the run script executable and run it:
-
-```bash
-chmod +x run_recorder.sh
-./run_recorder.sh
-```
-
-## Testing the Schedule
-
-The `show_schedule.py` script allows you to test the upcoming schedule and verify the availability of the streams. To run the schedule test:
-
-1. Make sure you're in the project directory and your virtual environment is activated.
-2. Run the following command:
-
-   ```bash
-   python3 show_schedule.py
-   ```
-
-This will display the upcoming recordings for the next 7 days, organized by date. For each show, it will test the stream URL and display the status:
-
-- ✅: The stream is accessible and appears to be an audio stream.
-- ❓: The stream is accessible but may not be an audio stream.
-- ❌: The stream is not accessible or there was an error.
-- ⏳: The connection timed out.
-
-This test helps ensure that your configured streams are working correctly before the scheduled recording time.
+3. Open your web browser and navigate to `http://127.0.0.1:5000/` (or the port specified by `FLASK_RUN_PORT`) to access the Radiojoe web interface.  If running from another machine on the network, use the machines ip address.
 
 ## Automating with Crontab
 
-To ensure the script runs at system startup:
+Since both run from the same script, consider using cron to run the `run_recorder.sh` on boot.
 
 1. Open the crontab editor:
 
@@ -124,38 +76,26 @@ To ensure the script runs at system startup:
    crontab -e
    ```
 
-2. Add the following entry:
+2. Add the following entry to start the recorder on boot:
 
-   ```shell
-   @reboot /path/to/your/project/run_recorder.sh >> /path/to/your/project/recorder.log 2>&1
+   ```text
+   @reboot /path/to/your/project/run_recorder.sh >> /path/to/your/project/radiojoe.log 2>&1 &
    ```
 
-   Replace `/path/to/your/project` with the actual path to your project directory.
-
-## Project Structure
-
-- `recorder.py`: The main Python script that handles scheduling and recording.
-- `show_schedule.py`: Script to test and display the upcoming schedule.
-- `config.json`: Configuration file for show details.
-- `run_recorder.sh`: Bash script to set environment variables and run the Python script.
-- `recordings/`: Directory where recorded shows are saved (created automatically).
-- `recorder.log`: Log file for the script's operations.
-
-## Customization
-
-You can customize the following environment variables in `run_recorder.sh`:
-
-- `RADIOJOE_BASE_DIR`: The base directory of the project.
-- `RADIOJOE_LOG_FILE`: Path to the log file.
-- `RADIOJOE_OUTPUT_DIR`: Directory where recordings are saved.
-- `RADIOJOE_CONFIG_FILE`: Path to the configuration file.
+Replace `/path/to/your/project` with the actual path to your project directory.
 
 ## Troubleshooting
 
-- If the script isn't running as expected, check the `recorder.log` file for error messages.
-- Ensure that ffmpeg is installed and accessible in your system's PATH.
-- Verify that the URLs in your `config.json` are correct and accessible.
-- Use the `show_schedule.py` script to test the availability of your configured streams.
+- **Application not running:** Check the `radiojoe.log` file for any error messages.
+- **Recordings not being created:**
+
+  - Ensure ffmpeg is installed and accessible in your system's PATH.
+  - Verify that the stream URLs in your `config.json` are correct and accessible.
+  - Check that the virtual environment is activated.
+
+- **Web interface not accessible:**
+
+  - Inspect logs for any apparent traceback, and ensure the program is running.
 
 ## Contributing
 

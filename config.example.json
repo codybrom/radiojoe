@@ -1,26 +1,35 @@
 {
-    "shows": [
-        {
-            "name": "KEXP",
-            "url": "https://17793.live.streamtheworld.com/KUOWFM_HIGH_MP3.mp3",
-            "day": "Thursday",
-            "time": "10:00 PM",
-            "timezone": "America/Los_Angeles",
-            "duration": 3600,
-            "artist": "KUOW Spotlight",
-            "album": "KUOW Spotlight",
-            "genre": "Radio"
-        },
-        {
-            "name": "WFMU",
-            "url": "https://stream0.wfmu.org/wfmu-high.mp3",
-            "day": "Friday",
-            "time": "6:00 PM",
-            "timezone": "America/New_York",
-            "duration": 3600,
-            "artist": "Bucci",
-            "album": "Bucci Tonite on WMFU",
-            "genre": "Radio"
-        }
-    ]
+  "base_dir": "/home/user/documents/radiojoe",
+  "log_file": "recorder.log",
+  "output_dir": "recordings",
+  "status_file": "status.json",
+  "default_metadata": {
+    "artist": "RadioJoe",
+    "album": "RadioJoe",
+    "genre": "Radio"
+  },
+  "shows": [
+    {
+      "name": "KEXP",
+      "url": "https://17793.live.streamtheworld.com/KUOWFM_HIGH_MP3.mp3",
+      "day": "Thursday",
+      "time": "10:00 PM",
+      "timezone": "America/Los_Angeles",
+      "duration": 3600,
+      "artist": "KUOW Spotlight",
+      "album": "KUOW Spotlight",
+      "genre": "Radio"
+    },
+    {
+      "name": "WFMU",
+      "url": "https://stream0.wfmu.org/wfmu-high.mp3",
+      "day": "Friday",
+      "time": "6:00 PM",
+      "timezone": "America/New_York",
+      "duration": 3600,
+      "artist": "Bucci",
+      "album": "Bucci Tonite on WMFU",
+      "genre": "Radio"
+    }
+  ]
 }
