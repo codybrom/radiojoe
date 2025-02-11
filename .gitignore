@@ -45,3 +45,6 @@ Thumbs.db
 *.bak
 *.old
 *.orig
+
+# Ignored folders
+ignored
