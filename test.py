@@ -3,35 +3,33 @@ import os
 import json
 import time
 from datetime import datetime, timedelta
-import pytz
 import threading
 import http.server
 import socketserver
 import logging
-from pydub import AudioSegment
 from pydub.generators import Sine
 import shutil
 
 # Configure logging
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 # Generate a simple MP3 file with a sine wave tone
-
-
 def generate_tone_mp3(filename, duration=60, freq=440):
     sine_wave = Sine(freq).to_audio_segment(
-        duration=duration*1000)  # duration in milliseconds
+        duration=duration * 1000
+    )  # duration in milliseconds
     sine_wave.export(filename, format="mp3")
 
 
 # Generate the MP3 file
-mp3_filename = 'test_tone.mp3'
+mp3_filename = "test_tone.mp3"
 generate_tone_mp3(mp3_filename)
 
+
 # Simulated stream server
-
-
 class SimulatedStreamHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -40,7 +38,7 @@ class SimulatedStreamHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("icy-genre", "Test")
         self.end_headers()
         try:
-            with open(mp3_filename, 'rb') as mp3_file:
+            with open(mp3_filename, "rb") as mp3_file:
                 while True:  # Loop the MP3 file continuously
                     chunk = mp3_file.read(4096)
                     if not chunk:
@@ -79,44 +77,43 @@ test_config = {
             "duration": 30,
             "artist": "Test Artist",
             "album": "Test Album",
-            "genre": "Test Genre"
+            "genre": "Test Genre",
         },
         {
             "name": "Test Show 2",
             "url": "http://localhost:8000",
             "day": (datetime.now() + timedelta(hours=1, minutes=2)).strftime("%A"),
-            "time": (datetime.now() + timedelta(hours=1, minutes=2)).strftime("%I:%M %p"),
+            "time": (datetime.now() + timedelta(hours=1, minutes=2)).strftime(
+                "%I:%M %p"
+            ),
             "timezone": "America/New_York",
             "duration": 30,
             "artist": "Test Artist 2",
             "album": "Test Album 2",
-            "genre": "Test Genre 2"
-        }
+            "genre": "Test Genre 2",
+        },
     ]
 }
 
 # Write the test configuration to a file
-with open('test_config.json', 'w') as f:
+with open("test_config.json", "w") as f:
     json.dump(test_config, f, indent=2)
 
 # Set environment variables
-os.environ['RADIOJOE_BASE_DIR'] = os.getcwd()
-os.environ['RADIOJOE_CONFIG_FILE'] = os.path.join(
-    os.getcwd(), 'test_config.json')
-os.environ['RADIOJOE_OUTPUT_DIR'] = os.path.join(
-    os.getcwd(), 'test_recordings')
-os.environ['RADIOJOE_LOG_FILE'] = os.path.join(
-    os.getcwd(), 'test_recorder.log')
+os.environ["RADIOJOE_BASE_DIR"] = os.getcwd()
+os.environ["RADIOJOE_CONFIG_FILE"] = os.path.join(os.getcwd(), "test_config.json")
+os.environ["RADIOJOE_OUTPUT_DIR"] = os.path.join(os.getcwd(), "test_recordings")
+os.environ["RADIOJOE_LOG_FILE"] = os.path.join(os.getcwd(), "test_recorder.log")
 
 # Ensure the output directory exists
-os.makedirs(os.environ['RADIOJOE_OUTPUT_DIR'], exist_ok=True)
+os.makedirs(os.environ["RADIOJOE_OUTPUT_DIR"], exist_ok=True)
 
 # Import and run the recorder
-
 if __name__ == "__main__":
     logging.info("Starting recorder test...")
     recorder_thread = threading.Thread(
-        target=recorder.schedule_recordings, args=(test_config,))
+        target=recorder.schedule_recordings, args=(test_config,)
+    )
     recorder_thread.start()
 
     # Run for 5 minutes
@@ -127,14 +124,16 @@ if __name__ == "__main__":
     logging.info("Test complete. Checking results...")
 
     # Check for recorded files
-    recorded_files = os.listdir(os.environ['RADIOJOE_OUTPUT_DIR'])
+    recorded_files = os.listdir(os.environ["RADIOJOE_OUTPUT_DIR"])
     logging.info(f"Recorded files: {recorded_files}")
 
     if len(recorded_files) == 2:
         logging.info("Test PASSED: Both shows were recorded.")
     else:
-        logging.warning(f"Test FAILED: Expected 2 recordings, but found {
-                        len(recorded_files)}.")
+        logging.warning(
+            f"Test FAILED: Expected 2 recordings, but found {
+                        len(recorded_files)}."
+        )
 
     logging.info("Cleaning up test files...")
 
@@ -144,23 +143,23 @@ if __name__ == "__main__":
         logging.info(f"Removed {mp3_filename}")
 
     # Remove the test configuration file
-    if os.path.exists('test_config.json'):
-        os.remove('test_config.json')
+    if os.path.exists("test_config.json"):
+        os.remove("test_config.json")
         logging.info("Removed test_config.json")
 
     # Remove the test recordings directory
-    if os.path.exists(os.environ['RADIOJOE_OUTPUT_DIR']):
-        shutil.rmtree(os.environ['RADIOJOE_OUTPUT_DIR'])
+    if os.path.exists(os.environ["RADIOJOE_OUTPUT_DIR"]):
+        shutil.rmtree(os.environ["RADIOJOE_OUTPUT_DIR"])
         logging.info(f"Removed directory: {os.environ['RADIOJOE_OUTPUT_DIR']}")
 
     # Remove the test log file
-    if os.path.exists(os.environ['RADIOJOE_LOG_FILE']):
-        os.remove(os.environ['RADIOJOE_LOG_FILE'])
+    if os.path.exists(os.environ["RADIOJOE_LOG_FILE"]):
+        os.remove(os.environ["RADIOJOE_LOG_FILE"])
         logging.info(f"Removed {os.environ['RADIOJOE_LOG_FILE']}")
 
     logging.info("Cleanup complete. Shutting down...")
 
-    # Note: You might want to implement a clean shutdown method in recorder.py
+    # Note: Might want to implement a clean shutdown method in recorder.py
     # For now, we'll just wait a bit to allow any ongoing recordings to finish
     time.sleep(4)
 
