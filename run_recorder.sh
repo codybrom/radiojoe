@@ -1,14 +1,24 @@
 #!/bin/bash
 set -o pipefail
 
-# Default configuration file.
-CONFIG_FILE="${RADIOJOE_CONFIG_FILE:-config.json}"
+# Get the directory of the script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Set the default configuration file path relative to the script directory
+CONFIG_FILE="${RADIOJOE_CONFIG_FILE:-$SCRIPT_DIR/config.json}"
+
+echo "Script directory: $SCRIPT_DIR"
+echo "Looking for config file at: $CONFIG_FILE"
 
 # Check if the config file exists.
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "ERROR: Configuration file not found: $CONFIG_FILE"
+  echo "Files in script directory:"
+  ls -la "$SCRIPT_DIR"
   exit 1
 fi
+
+echo "Using configuration file: $CONFIG_FILE"
 
 # Read the entire config file into a single string.
 CONFIG_STRING=$(cat "$CONFIG_FILE")
