@@ -64,12 +64,17 @@ log "Current working directory: $(pwd)"
 
 # Activate virtual environment if not already active
 if [ -z "$VIRTUAL_ENV" ]; then
-  if [ -d "$BASE_DIR/.venv/bin" ]; then
+  if [ -d "$BASE_DIR/venv/bin" ]; then
+      log "Activating virtual environment"
+      source "$BASE_DIR/venv/bin/activate"
+      log "Virtual environment activated: $VIRTUAL_ENV"
+  elif [ -d "$BASE_DIR/.venv/bin" ]; then
       log "Activating virtual environment"
       source "$BASE_DIR/.venv/bin/activate"
       log "Virtual environment activated: $VIRTUAL_ENV"
   else
-      log "ERROR: Virtual environment directory not found: $BASE_DIR/.venv/bin. Is the virtual environment set up?"
+      log "ERROR: Virtual environment directory not found. Is the virtual environment set up?"
+      log "Checked: $BASE_DIR/venv/bin and $BASE_DIR/.venv/bin"
       exit 1
   fi
 else
